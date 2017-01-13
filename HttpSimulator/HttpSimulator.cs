@@ -10,175 +10,176 @@ using System.Web.SessionState;
 
 namespace Subtext.TestLibrary
 {
-    public enum HttpVerb
-    {
-        GET,
-        HEAD,
-        POST,
-        PUT,
-        DELETE,
-    }
+	public enum HttpVerb
+	{
+		GET,
+		HEAD,
+		POST,
+		PUT,
+		DELETE,
+	}
 
 	/// <summary>
-    /// Useful class for simulating the HttpContext. This does not actually 
-    /// make an HttpRequest, it merely simulates the state that your code 
-    /// would be in "as if" handling a request. Thus the HttpContext.Current 
-    /// property is populated.
-    /// </summary>
-    public class HttpSimulator : IDisposable
-    {
-        private const string defaultPhysicalAppPath = @"c:\InetPub\wwwRoot\";
-        private StringBuilder builder;
-        private Uri _referer;
-        private NameValueCollection _formVars = new NameValueCollection();
-        private NameValueCollection _headers = new NameValueCollection();
+	/// Useful class for simulating the HttpContext. This does not actually 
+	/// make an HttpRequest, it merely simulates the state that your code 
+	/// would be in "as if" handling a request. Thus the HttpContext.Current 
+	/// property is populated.
+	/// </summary>
+	public class HttpSimulator : IDisposable
+	{
+		private const string defaultPhysicalAppPath = @"c:\InetPub\wwwRoot\";
+		private StringBuilder builder;
+		private Uri _referer;
+		private NameValueCollection _formVars = new NameValueCollection();
+		private NameValueCollection _headers = new NameValueCollection();
 
-        public HttpSimulator() : this("/", defaultPhysicalAppPath)
-        {
-        }
+		public HttpSimulator() : this("/", defaultPhysicalAppPath)
+		{
+		}
 
-        public HttpSimulator(string applicationPath) : this(applicationPath, defaultPhysicalAppPath)
-        {
-            
-        }
+		public HttpSimulator(string applicationPath) : this(applicationPath, defaultPhysicalAppPath)
+		{
 
-        public HttpSimulator(string applicationPath, string physicalApplicationPath)
-        {
-            this.ApplicationPath = applicationPath;
-            this.PhysicalApplicationPath = physicalApplicationPath;
-        }
+		}
 
-        /// <summary>
-        /// Sets up the HttpContext objects to simulate a GET request.
-        /// </summary>
-        /// <remarks>
-        /// Simulates a request to http://localhost/
-        /// </remarks>
-        public HttpSimulator SimulateRequest()
-        {
-            return SimulateRequest(new Uri("http://localhost/"));
-        }
+		public HttpSimulator(string applicationPath, string physicalApplicationPath)
+		{
+			this.ApplicationPath = applicationPath;
+			this.PhysicalApplicationPath = physicalApplicationPath;
+		}
 
-        /// <summary>
-        /// Sets up the HttpContext objects to simulate a GET request.
-        /// </summary>
-        /// <param name="url"></param>
-        public HttpSimulator SimulateRequest(Uri url)
-        {
-            return SimulateRequest(url, HttpVerb.GET);
-        }
+		/// <summary>
+		/// Sets up the HttpContext objects to simulate a GET request.
+		/// </summary>
+		/// <remarks>
+		/// Simulates a request to http://localhost/
+		/// </remarks>
+		public HttpSimulator SimulateRequest()
+		{
+			return SimulateRequest(new Uri("http://localhost/"));
+		}
 
-        /// <summary>
-        /// Sets up the HttpContext objects to simulate a request.
-        /// </summary>
-        /// <param name="url"></param>
-        /// <param name="httpVerb"></param>
-        public HttpSimulator SimulateRequest(Uri url, HttpVerb httpVerb)
-        {
-            return SimulateRequest(url, httpVerb, null, null);
-        }
+		/// <summary>
+		/// Sets up the HttpContext objects to simulate a GET request.
+		/// </summary>
+		/// <param name="url"></param>
+		public HttpSimulator SimulateRequest(Uri url)
+		{
+			return SimulateRequest(url, HttpVerb.GET);
+		}
 
-        /// <summary>
-        /// Sets up the HttpContext objects to simulate a POST request.
-        /// </summary>
-        /// <param name="url"></param>
-        /// <param name="formVariables"></param>
-        public HttpSimulator SimulateRequest(Uri url, NameValueCollection formVariables)
-        {
-            return SimulateRequest(url, HttpVerb.POST, formVariables, null);
-        }
+		/// <summary>
+		/// Sets up the HttpContext objects to simulate a request.
+		/// </summary>
+		/// <param name="url"></param>
+		/// <param name="httpVerb"></param>
+		public HttpSimulator SimulateRequest(Uri url, HttpVerb httpVerb)
+		{
+			return SimulateRequest(url, httpVerb, null, null);
+		}
 
-        /// <summary>
-        /// Sets up the HttpContext objects to simulate a POST request.
-        /// </summary>
-        /// <param name="url"></param>
-        /// <param name="formVariables"></param>
-        /// <param name="headers"></param>
-        public HttpSimulator SimulateRequest(Uri url, NameValueCollection formVariables, NameValueCollection headers)
-        {
-            return SimulateRequest(url, HttpVerb.POST, formVariables, headers);
-        }
+		/// <summary>
+		/// Sets up the HttpContext objects to simulate a POST request.
+		/// </summary>
+		/// <param name="url"></param>
+		/// <param name="formVariables"></param>
+		public HttpSimulator SimulateRequest(Uri url, NameValueCollection formVariables)
+		{
+			return SimulateRequest(url, HttpVerb.POST, formVariables, null);
+		}
 
-        /// <summary>
-        /// Sets up the HttpContext objects to simulate a request.
-        /// </summary>
-        /// <param name="url"></param>
-        /// <param name="httpVerb"></param>
-        /// <param name="headers"></param>
-        public HttpSimulator SimulateRequest(Uri url, HttpVerb httpVerb, NameValueCollection headers)
-        {
-            return SimulateRequest(url, httpVerb, null, headers);
-        }
+		/// <summary>
+		/// Sets up the HttpContext objects to simulate a POST request.
+		/// </summary>
+		/// <param name="url"></param>
+		/// <param name="formVariables"></param>
+		/// <param name="headers"></param>
+		public HttpSimulator SimulateRequest(Uri url, NameValueCollection formVariables, NameValueCollection headers)
+		{
+			return SimulateRequest(url, HttpVerb.POST, formVariables, headers);
+		}
 
-        /// <summary>
-        /// Sets up the HttpContext objects to simulate a request.
-        /// </summary>
-        /// <param name="url"></param>
-        /// <param name="httpVerb"></param>
-        /// <param name="formVariables"></param>
-        /// <param name="headers"></param>
-        protected virtual HttpSimulator SimulateRequest(Uri url, HttpVerb httpVerb, NameValueCollection formVariables, NameValueCollection headers)
-        {
-            HttpContext.Current = null;
+		/// <summary>
+		/// Sets up the HttpContext objects to simulate a request.
+		/// </summary>
+		/// <param name="url"></param>
+		/// <param name="httpVerb"></param>
+		/// <param name="headers"></param>
+		public HttpSimulator SimulateRequest(Uri url, HttpVerb httpVerb, NameValueCollection headers)
+		{
+			return SimulateRequest(url, httpVerb, null, headers);
+		}
 
-            ParseRequestUrl(url);
+		/// <summary>
+		/// Sets up the HttpContext objects to simulate a request.
+		/// </summary>
+		/// <param name="url"></param>
+		/// <param name="httpVerb"></param>
+		/// <param name="formVariables"></param>
+		/// <param name="headers"></param>
+		protected virtual HttpSimulator SimulateRequest(Uri url, HttpVerb httpVerb, NameValueCollection formVariables, NameValueCollection headers)
+		{
+			HttpContext.Current = null;
 
-            if (this.responseWriter == null)
-            {
-                this.builder = new StringBuilder();
-                this.responseWriter = new StringWriter(builder);
-            }
+			ParseRequestUrl(url);
 
-            SetHttpRuntimeInternals();
+			if (this.responseWriter == null)
+			{
+				this.builder = new StringBuilder();
+				this.responseWriter = new StringWriter(builder);
+			}
 
-            string query = ExtractQueryStringPart(url);
+			SetHttpRuntimeInternals();
 
-            if (formVariables != null)
-                _formVars.Add(formVariables);
+			string query = ExtractQueryStringPart(url);
 
-            if (_formVars.Count > 0)
-                httpVerb = HttpVerb.POST; //Need to enforce this.
+			if (formVariables != null)
+				_formVars.Add(formVariables);
 
-            if (headers != null)
-                _headers.Add(headers);
-			
-            this.workerRequest = new SimulatedHttpRequest(ApplicationPath, PhysicalApplicationPath, PhysicalPath, Page, query, this.responseWriter, host, port, httpVerb.ToString());
+			if (_formVars.Count > 0)
+				httpVerb = HttpVerb.POST; //Need to enforce this.
 
-            this.workerRequest.Form.Add(_formVars);
-            this.workerRequest.Headers.Add(_headers);
+			if (headers != null)
+				_headers.Add(headers);
 
-            if (_referer != null)
-                this.workerRequest.SetReferer(_referer);
+			var isSecure = url.AbsoluteUri.StartsWith("https:");
 
-        	InitializeSession();
+			this.workerRequest = new SimulatedHttpRequest(ApplicationPath, PhysicalApplicationPath, PhysicalPath, Page, query, this.responseWriter, host, port, httpVerb.ToString(), isSecure);
+			this.workerRequest.Form.Add(_formVars);
+			this.workerRequest.Headers.Add(_headers);
+
+			if (_referer != null)
+				this.workerRequest.SetReferer(_referer);
+
+			InitializeSession();
 
 			InitializeApplication();
-            
-            #region Console Debug INfo
 
-            Console.WriteLine("host: " + host);
-            Console.WriteLine("virtualDir: " + applicationPath);
-            Console.WriteLine("page: " + localPath);
-            Console.WriteLine("pathPartAfterApplicationPart: " + _page);
-            Console.WriteLine("appPhysicalDir: " + physicalApplicationPath);
-            Console.WriteLine("Request.Url.LocalPath: " + HttpContext.Current.Request.Url.LocalPath);
-            Console.WriteLine("Request.Url.Host: " + HttpContext.Current.Request.Url.Host);
-            Console.WriteLine("Request.FilePath: " + HttpContext.Current.Request.FilePath);
-            Console.WriteLine("Request.Path: " + HttpContext.Current.Request.Path);
-            Console.WriteLine("Request.RawUrl: " + HttpContext.Current.Request.RawUrl);
-            Console.WriteLine("Request.Url: " + HttpContext.Current.Request.Url);
-            Console.WriteLine("Request.Url.Port: " + HttpContext.Current.Request.Url.Port);
-            Console.WriteLine("Request.ApplicationPath: " + HttpContext.Current.Request.ApplicationPath);
-            Console.WriteLine("Request.PhysicalPath: " + HttpContext.Current.Request.PhysicalPath);
-            Console.WriteLine("HttpRuntime.AppDomainAppPath: " + HttpRuntime.AppDomainAppPath);
-            Console.WriteLine("HttpRuntime.AppDomainAppVirtualPath: " + HttpRuntime.AppDomainAppVirtualPath);
-            Console.WriteLine("HostingEnvironment.ApplicationPhysicalPath: " + HostingEnvironment.ApplicationPhysicalPath);
-            Console.WriteLine("HostingEnvironment.ApplicationVirtualPath: " + HostingEnvironment.ApplicationVirtualPath);
+			#region Console Debug INfo
 
-            #endregion
-            
-            return this;
-        }
+			Console.WriteLine("host: " + host);
+			Console.WriteLine("virtualDir: " + applicationPath);
+			Console.WriteLine("page: " + localPath);
+			Console.WriteLine("pathPartAfterApplicationPart: " + _page);
+			Console.WriteLine("appPhysicalDir: " + physicalApplicationPath);
+			Console.WriteLine("Request.Url.LocalPath: " + HttpContext.Current.Request.Url.LocalPath);
+			Console.WriteLine("Request.Url.Host: " + HttpContext.Current.Request.Url.Host);
+			Console.WriteLine("Request.FilePath: " + HttpContext.Current.Request.FilePath);
+			Console.WriteLine("Request.Path: " + HttpContext.Current.Request.Path);
+			Console.WriteLine("Request.RawUrl: " + HttpContext.Current.Request.RawUrl);
+			Console.WriteLine("Request.Url: " + HttpContext.Current.Request.Url);
+			Console.WriteLine("Request.Url.Port: " + HttpContext.Current.Request.Url.Port);
+			Console.WriteLine("Request.ApplicationPath: " + HttpContext.Current.Request.ApplicationPath);
+			Console.WriteLine("Request.PhysicalPath: " + HttpContext.Current.Request.PhysicalPath);
+			Console.WriteLine("HttpRuntime.AppDomainAppPath: " + HttpRuntime.AppDomainAppPath);
+			Console.WriteLine("HttpRuntime.AppDomainAppVirtualPath: " + HttpRuntime.AppDomainAppVirtualPath);
+			Console.WriteLine("HostingEnvironment.ApplicationPhysicalPath: " + HostingEnvironment.ApplicationPhysicalPath);
+			Console.WriteLine("HostingEnvironment.ApplicationVirtualPath: " + HostingEnvironment.ApplicationVirtualPath);
+
+			#endregion
+
+			return this;
+		}
 
 		private static void InitializeApplication()
 		{
@@ -212,7 +213,7 @@ namespace Subtext.TestLibrary
 			///
 			public void Abandon()
 			{
-				BaseClear();	
+				BaseClear();
 			}
 
 			///<summary>
@@ -438,7 +439,7 @@ namespace Subtext.TestLibrary
 				get { return syncRoot; }
 			}
 
-			
+
 
 			///<summary>
 			///Gets a value indicating whether access to the collection of session-state values is synchronized (thread safe).
@@ -469,63 +470,63 @@ namespace Subtext.TestLibrary
 			}
 		}
 
-    	/// <summary>
-        /// Sets the referer for the request. Uses a fluent interface.
-        /// </summary>
-        /// <param name="referer"></param>
-        /// <returns></returns>
-        public HttpSimulator SetReferer(Uri referer)
-        {
-            if(this.workerRequest != null)
-                this.workerRequest.SetReferer(referer);
-            this._referer = referer;
-            return this;
-        }
+		/// <summary>
+		/// Sets the referer for the request. Uses a fluent interface.
+		/// </summary>
+		/// <param name="referer"></param>
+		/// <returns></returns>
+		public HttpSimulator SetReferer(Uri referer)
+		{
+			if (this.workerRequest != null)
+				this.workerRequest.SetReferer(referer);
+			this._referer = referer;
+			return this;
+		}
 
-        /// <summary>
-        /// Sets a form variable.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public HttpSimulator SetFormVariable(string name, string value)
-        {
-            //TODO: Change this ordering requirement.
-            if (this.workerRequest != null)
-                throw new InvalidOperationException("Cannot set form variables after calling Simulate().");
+		/// <summary>
+		/// Sets a form variable.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public HttpSimulator SetFormVariable(string name, string value)
+		{
+			//TODO: Change this ordering requirement.
+			if (this.workerRequest != null)
+				throw new InvalidOperationException("Cannot set form variables after calling Simulate().");
 
-            _formVars.Add(name, value);
+			_formVars.Add(name, value);
 
-            return this;
-        }
+			return this;
+		}
 
-        /// <summary>
-        /// Sets a header value.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public HttpSimulator SetHeader(string name, string value)
-        {
-            //TODO: Change this ordering requirement.
-            if (this.workerRequest != null)
-                throw new InvalidOperationException("Cannot set headers after calling Simulate().");
+		/// <summary>
+		/// Sets a header value.
+		/// </summary>
+		/// <param name="name"></param>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public HttpSimulator SetHeader(string name, string value)
+		{
+			//TODO: Change this ordering requirement.
+			if (this.workerRequest != null)
+				throw new InvalidOperationException("Cannot set headers after calling Simulate().");
 
-            _headers.Add(name, value);
+			_headers.Add(name, value);
 
-            return this;
-        }
+			return this;
+		}
 
-        private void ParseRequestUrl(Uri url)
-        {
-            if (url == null)
-                return;
-            this.host = url.Host;
-            this.port = url.Port;
-            this.localPath = url.LocalPath;
-        	this._page = StripPrecedingSlashes(RightAfter(url.LocalPath, ApplicationPath));
-            this.physicalPath = Path.Combine(this.physicalApplicationPath, this._page.Replace("/", @"\"));
-        }
+		private void ParseRequestUrl(Uri url)
+		{
+			if (url == null)
+				return;
+			this.host = url.Host;
+			this.port = url.Port;
+			this.localPath = url.LocalPath;
+			this._page = StripPrecedingSlashes(RightAfter(url.LocalPath, ApplicationPath));
+			this.physicalPath = Path.Combine(this.physicalApplicationPath, this._page.Replace("/", @"\"));
+		}
 
 		static string RightAfter(string original, string search)
 		{
@@ -540,240 +541,240 @@ namespace Subtext.TestLibrary
 			return original.Substring(original.IndexOf(search) + search.Length);
 		}
 
-    	public string Host
-        {
-            get { return this.host; }
-        }
+		public string Host
+		{
+			get { return this.host; }
+		}
 
-        private string host;
+		private string host;
 
-        public string LocalPath
-        {
-            get { return this.localPath; }
-        }
+		public string LocalPath
+		{
+			get { return this.localPath; }
+		}
 
-        private string localPath;
-        
-        public int Port
-        {
-            get { return this.port; }
-        }
+		private string localPath;
 
-        private int port;
+		public int Port
+		{
+			get { return this.port; }
+		}
 
-        /// <summary>
-        /// Portion of the URL after the application.
-        /// </summary>
-        public string Page
-        {
-            get { return this._page; }
-        }
+		private int port;
 
-        private string _page;
+		/// <summary>
+		/// Portion of the URL after the application.
+		/// </summary>
+		public string Page
+		{
+			get { return this._page; }
+		}
 
-        /// <summary>
-        /// The same thing as the IIS Virtual directory. It's 
-        /// what gets returned by Request.ApplicationPath.
-        /// </summary>
-        public string ApplicationPath
-        {
-            get { return this.applicationPath; }
-            set 
-            { 
-                this.applicationPath = value ?? "/";
-                this.applicationPath = NormalizeSlashes(this.applicationPath);
-            }
-        }
-        private string applicationPath = "/";
+		private string _page;
 
-        /// <summary>
-        /// Physical path to the application (used for simulation purposes).
-        /// </summary>
-        public string PhysicalApplicationPath
-        {
-            get { return this.physicalApplicationPath; }
-            set 
-            {
-                this.physicalApplicationPath = value ?? defaultPhysicalAppPath;
-                //strip trailing backslashes.
-                this.physicalApplicationPath = StripTrailingBackSlashes(this.physicalApplicationPath) + @"\";
-            }
-        }
+		/// <summary>
+		/// The same thing as the IIS Virtual directory. It's 
+		/// what gets returned by Request.ApplicationPath.
+		/// </summary>
+		public string ApplicationPath
+		{
+			get { return this.applicationPath; }
+			set
+			{
+				this.applicationPath = value ?? "/";
+				this.applicationPath = NormalizeSlashes(this.applicationPath);
+			}
+		}
+		private string applicationPath = "/";
 
-        private string physicalApplicationPath = defaultPhysicalAppPath;
+		/// <summary>
+		/// Physical path to the application (used for simulation purposes).
+		/// </summary>
+		public string PhysicalApplicationPath
+		{
+			get { return this.physicalApplicationPath; }
+			set
+			{
+				this.physicalApplicationPath = value ?? defaultPhysicalAppPath;
+				//strip trailing backslashes.
+				this.physicalApplicationPath = StripTrailingBackSlashes(this.physicalApplicationPath) + @"\";
+			}
+		}
 
-        /// <summary>
-        /// Physical path to the requested file (used for simulation purposes).
-        /// </summary>
-        public string PhysicalPath
-        {
-            get { return this.physicalPath; }
-        }
+		private string physicalApplicationPath = defaultPhysicalAppPath;
 
-        private string physicalPath = defaultPhysicalAppPath;
+		/// <summary>
+		/// Physical path to the requested file (used for simulation purposes).
+		/// </summary>
+		public string PhysicalPath
+		{
+			get { return this.physicalPath; }
+		}
 
-        public TextWriter ResponseWriter
-        {
-            get { return this.responseWriter; }
-            set { this.responseWriter = value; }
-        }
+		private string physicalPath = defaultPhysicalAppPath;
 
-        /// <summary>
-        /// Returns the text from the response to the simulated request.
-        /// </summary>
-        public string ResponseText
-        {
-            get
-            {
-                return (builder ?? new StringBuilder()).ToString();
-            }
-        }
+		public TextWriter ResponseWriter
+		{
+			get { return this.responseWriter; }
+			set { this.responseWriter = value; }
+		}
 
-        private TextWriter responseWriter;
+		/// <summary>
+		/// Returns the text from the response to the simulated request.
+		/// </summary>
+		public string ResponseText
+		{
+			get
+			{
+				return (builder ?? new StringBuilder()).ToString();
+			}
+		}
 
-        public SimulatedHttpRequest WorkerRequest
-        {
-            get { return this.workerRequest; }
-        }
+		private TextWriter responseWriter;
 
-        private SimulatedHttpRequest workerRequest;
+		public SimulatedHttpRequest WorkerRequest
+		{
+			get { return this.workerRequest; }
+		}
 
-        private static string ExtractQueryStringPart(Uri url)
-        {
-            string query = url.Query ?? string.Empty;
-            if(query.StartsWith("?"))
-                return query.Substring(1);
-            return query;
-        }
+		private SimulatedHttpRequest workerRequest;
 
-        void SetHttpRuntimeInternals()
-        {
-            //We cheat by using reflection.
+		private static string ExtractQueryStringPart(Uri url)
+		{
+			string query = url.Query ?? string.Empty;
+			if (query.StartsWith("?"))
+				return query.Substring(1);
+			return query;
+		}
 
-            // get singleton property value
-            HttpRuntime runtime = ReflectionHelper.GetStaticFieldValue<HttpRuntime>("_theRuntime", typeof (HttpRuntime));
-           
-            // set app path property value
-            ReflectionHelper.SetPrivateInstanceFieldValue("_appDomainAppPath", runtime, PhysicalApplicationPath);
-            // set app virtual path property value
-            string vpathTypeName = "System.Web.VirtualPath, System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a";
-            object virtualPath = ReflectionHelper.Instantiate(vpathTypeName, new Type[] { typeof(string) }, new object[] { ApplicationPath });
-            ReflectionHelper.SetPrivateInstanceFieldValue("_appDomainAppVPath", runtime, virtualPath);
+		void SetHttpRuntimeInternals()
+		{
+			//We cheat by using reflection.
 
-            // set codegen dir property value
-            ReflectionHelper.SetPrivateInstanceFieldValue("_codegenDir", runtime, PhysicalApplicationPath);
+			// get singleton property value
+			HttpRuntime runtime = ReflectionHelper.GetStaticFieldValue<HttpRuntime>("_theRuntime", typeof(HttpRuntime));
 
-            HostingEnvironment environment = GetHostingEnvironment();
-            ReflectionHelper.SetPrivateInstanceFieldValue("_appPhysicalPath", environment, PhysicalApplicationPath);
-            ReflectionHelper.SetPrivateInstanceFieldValue("_appVirtualPath", environment, virtualPath);
-            ReflectionHelper.SetPrivateInstanceFieldValue("_configMapPath", environment, new ConfigMapPath(this));
-        }
+			// set app path property value
+			ReflectionHelper.SetPrivateInstanceFieldValue("_appDomainAppPath", runtime, PhysicalApplicationPath);
+			// set app virtual path property value
+			string vpathTypeName = "System.Web.VirtualPath, System.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a";
+			object virtualPath = ReflectionHelper.Instantiate(vpathTypeName, new Type[] { typeof(string) }, new object[] { ApplicationPath });
+			ReflectionHelper.SetPrivateInstanceFieldValue("_appDomainAppVPath", runtime, virtualPath);
 
-        protected static HostingEnvironment GetHostingEnvironment()
-        {
-            HostingEnvironment environment;
-            try
-            {
-                environment = new HostingEnvironment();
-            }
-            catch (InvalidOperationException)
-            {
-                //Shoot, we need to grab it via reflection.
-                environment = ReflectionHelper.GetStaticFieldValue<HostingEnvironment>("_theHostingEnvironment", typeof(HostingEnvironment));
-            }
-            return environment;
-        }
+			// set codegen dir property value
+			ReflectionHelper.SetPrivateInstanceFieldValue("_codegenDir", runtime, PhysicalApplicationPath);
 
-        #region --- Text Manipulation Methods for slashes ---
-        protected static string NormalizeSlashes(string s)
-        {
-            if (String.IsNullOrEmpty(s) || s == "/")
-                return "/";
+			HostingEnvironment environment = GetHostingEnvironment();
+			ReflectionHelper.SetPrivateInstanceFieldValue("_appPhysicalPath", environment, PhysicalApplicationPath);
+			ReflectionHelper.SetPrivateInstanceFieldValue("_appVirtualPath", environment, virtualPath);
+			ReflectionHelper.SetPrivateInstanceFieldValue("_configMapPath", environment, new ConfigMapPath(this));
+		}
 
-            s = s.Replace(@"\", "/");
+		protected static HostingEnvironment GetHostingEnvironment()
+		{
+			HostingEnvironment environment;
+			try
+			{
+				environment = new HostingEnvironment();
+			}
+			catch (InvalidOperationException)
+			{
+				//Shoot, we need to grab it via reflection.
+				environment = ReflectionHelper.GetStaticFieldValue<HostingEnvironment>("_theHostingEnvironment", typeof(HostingEnvironment));
+			}
+			return environment;
+		}
 
-            //Reduce multiple slashes in row to single.
-            string normalized = Regex.Replace(s, "(/)/+", "$1");
-            //Strip left.
-            normalized = StripPrecedingSlashes(normalized);
-            //Strip right.
-            normalized = StripTrailingSlashes(normalized);
-            return "/" + normalized;
-        }
+		#region --- Text Manipulation Methods for slashes ---
+		protected static string NormalizeSlashes(string s)
+		{
+			if (String.IsNullOrEmpty(s) || s == "/")
+				return "/";
 
-        protected static string StripPrecedingSlashes(string s)
-        {
-            return Regex.Replace(s, "^/*(.*)", "$1");
-        }
+			s = s.Replace(@"\", "/");
 
-        protected static string StripTrailingSlashes(string s)
-        {
-            return Regex.Replace(s, "(.*)/*$", "$1", RegexOptions.RightToLeft);
-        }
+			//Reduce multiple slashes in row to single.
+			string normalized = Regex.Replace(s, "(/)/+", "$1");
+			//Strip left.
+			normalized = StripPrecedingSlashes(normalized);
+			//Strip right.
+			normalized = StripTrailingSlashes(normalized);
+			return "/" + normalized;
+		}
 
-        protected static string StripTrailingBackSlashes(string s)
-        {
-            if (String.IsNullOrEmpty(s))
-                return string.Empty;
-            return Regex.Replace(s, @"(.*)\\*$", "$1", RegexOptions.RightToLeft);
-        }
-        #endregion
+		protected static string StripPrecedingSlashes(string s)
+		{
+			return Regex.Replace(s, "^/*(.*)", "$1");
+		}
 
-        internal class ConfigMapPath : IConfigMapPath
-        {
-            private HttpSimulator _requestSimulation;
-            public ConfigMapPath(HttpSimulator simulation)
-            {
-                _requestSimulation = simulation;
-            }
+		protected static string StripTrailingSlashes(string s)
+		{
+			return Regex.Replace(s, "(.*)/*$", "$1", RegexOptions.RightToLeft);
+		}
 
-            public string GetMachineConfigFilename()
-            {
-                throw new NotImplementedException();
-            }
+		protected static string StripTrailingBackSlashes(string s)
+		{
+			if (String.IsNullOrEmpty(s))
+				return string.Empty;
+			return Regex.Replace(s, @"(.*)\\*$", "$1", RegexOptions.RightToLeft);
+		}
+		#endregion
 
-            public string GetRootWebConfigFilename()
-            {
-                throw new NotImplementedException();
-            }
+		internal class ConfigMapPath : IConfigMapPath
+		{
+			private HttpSimulator _requestSimulation;
+			public ConfigMapPath(HttpSimulator simulation)
+			{
+				_requestSimulation = simulation;
+			}
 
-            public void GetPathConfigFilename(string siteID, string path, out string directory, out string baseName)
-            {
-                throw new NotImplementedException();
-            }
+			public string GetMachineConfigFilename()
+			{
+				throw new NotImplementedException();
+			}
 
-            public void GetDefaultSiteNameAndID(out string siteName, out string siteID)
-            {
-                throw new NotImplementedException();
-            }
+			public string GetRootWebConfigFilename()
+			{
+				throw new NotImplementedException();
+			}
 
-            public void ResolveSiteArgument(string siteArgument, out string siteName, out string siteID)
-            {
-                throw new NotImplementedException();
-            }
+			public void GetPathConfigFilename(string siteID, string path, out string directory, out string baseName)
+			{
+				throw new NotImplementedException();
+			}
 
-            public string MapPath(string siteID, string path)
-            {
-                string page = StripPrecedingSlashes(RightAfter(path, _requestSimulation.ApplicationPath));
-                return Path.Combine(_requestSimulation.PhysicalApplicationPath, page.Replace("/", @"\"));
-            }
+			public void GetDefaultSiteNameAndID(out string siteName, out string siteID)
+			{
+				throw new NotImplementedException();
+			}
 
-            public string GetAppPathForPath(string siteID, string path)
-            {
-                return _requestSimulation.ApplicationPath;
-            }
-        }
+			public void ResolveSiteArgument(string siteArgument, out string siteName, out string siteID)
+			{
+				throw new NotImplementedException();
+			}
 
-        ///<summary>
-        ///Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        ///</summary>
-        ///<filterpriority>2</filterpriority>
-        public void Dispose()
-        {
-            if(HttpContext.Current != null)
-            {
-                HttpContext.Current = null;
-            }
-        }
-    }
+			public string MapPath(string siteID, string path)
+			{
+				string page = StripPrecedingSlashes(RightAfter(path, _requestSimulation.ApplicationPath));
+				return Path.Combine(_requestSimulation.PhysicalApplicationPath, page.Replace("/", @"\"));
+			}
+
+			public string GetAppPathForPath(string siteID, string path)
+			{
+				return _requestSimulation.ApplicationPath;
+			}
+		}
+
+		///<summary>
+		///Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
+		///</summary>
+		///<filterpriority>2</filterpriority>
+		public void Dispose()
+		{
+			if (HttpContext.Current != null)
+			{
+				HttpContext.Current = null;
+			}
+		}
+	}
 }
